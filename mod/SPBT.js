@@ -7,12 +7,19 @@ var Baudrate=115200;
 var COMList=[];
 var COMPort;
 var UserCallback=false;
+var IsPaired=false;
 
 function COMcb(d){
 	var data="";
 	d.forEach(function(elem){data+=String.fromCharCode(elem)});
-	if(UserCallback)
-		UserCallback(data);
+	if(IsPaired){
+		if(UserCallback)
+			UserCallback(data);
+	}
+	else{
+		//manage RX frames to establish a pairing with a device
+	}
+	
 }
 
 function SPBT(COM, Baud,cb) {
