@@ -61,8 +61,15 @@ var SerialPort = require("serialport").SerialPort;
 var COMName=(LinuxOS)?'/dev/ttyUSB0':WinCOMPort;
 var BTCOM = new SerialPort(COMName, {
   baudrate: 115200
+},false);
+BTCOM.open(function(err){
+	if ( err ) {
+		console.log('failed to open: '+err);
+	}
+	else{	
+		BTCOM.on('data',BTCOMcb);
+	}
 });
-BTCOM.on('data',BTCOMcb);
 
 function BTCOMcb(d){
 	var data="";
