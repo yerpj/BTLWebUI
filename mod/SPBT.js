@@ -6,8 +6,9 @@ var COMName=(os.platform==='win32')?'COM0':'/dev/ttyUSB0';
 var Baudrate=115200;
 var COMList=[];
 var COMPort;
+var COMPortValid=false;
 var UserCallback=false;
-var IsPaired=false;
+var IsPaired=true;
 
 function COMcb(d){
 	var data="";
@@ -35,10 +36,14 @@ function SPBT(COM, Baud,cb) {
 				console.log('failed to open '+COMName+" :"+err);
 			}
 			else{	
+				COMPortValid=true;
 				COMPort.on('data',COMcb);
+				Discovery();
 			}
 		});
 	}
+	
+	
 	
 	Serial.list(function(err,ports){
 		ports.forEach(function(port){
@@ -53,6 +58,26 @@ function SPBT(COM, Baud,cb) {
 	});	
 }
 
+function Discovery(){
+	if(COMPortValid)
+	{
+		COMPort.write("AT+AB Discovery\r\n");
+	}
+	/* Answer from a discovery: 
+	
+	AT-AB InqPending
+
+	AT-AB DiscoveryPending 1
+
+	AT-AB Device 44746c2ced48 "JPPhone"
+	
+	*/
+}
+
+function Bond(){
+	;/*Proceed to a discovery, then fills a table with accessible devices*/
+}
+
 /*
 var PortList=
 Serial.list(function (err, ports) {
@@ -64,3 +89,4 @@ Serial.list(function (err, ports) {
 
 
 exports.SPBT=SPBT;
+exports.Bond=Bond;
