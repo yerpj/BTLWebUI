@@ -1,5 +1,5 @@
-# LaVueWebUI
-LaVue testbed web based backend server &amp; UI
+# BTLWebUI
+BlueTooth Logger testbed web based backend server &amp; UI
 
 Small Node.js server application that does a few things:
 - initiates a SPP connection on Bluetooth 
