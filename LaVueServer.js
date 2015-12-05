@@ -5,7 +5,7 @@
 
 
 //generic vars
-var WinCOMPort='COM15';
+var COMPort='COM15';
 var PORT=80;
 var MAINFILE='index.html';
 
@@ -57,19 +57,7 @@ io.set('transports',  ['websocket', 'polling']);
 
 
 //Serial port
-var SerialPort = require("serialport").SerialPort;
-var COMName=(LinuxOS)?'/dev/ttyUSB0':WinCOMPort;
-var BTCOM = new SerialPort(COMName, {
-  baudrate: 115200
-},false);
-BTCOM.open(function(err){
-	if ( err ) {
-		console.log('failed to open: '+err);
-	}
-	else{	
-		BTCOM.on('data',BTCOMcb);
-	}
-});
+var SPBT=require('./mod/SPBT').SPBT;
 
 function BTCOMcb(d){
 	var data="";
@@ -80,3 +68,5 @@ function BTCOMcb(d){
 	else
 		console.log('no websocket to send to');
 }
+
+SPBT(COMPort,115200,function(x){console.log("User callback , data received :"+x);});
