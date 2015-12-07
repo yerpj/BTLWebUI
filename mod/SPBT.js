@@ -50,6 +50,7 @@ function SPBTDispatch(input){
 	}
 	else if(input.indexOf('AT-AB ConnectionUp')>-1){
 		console.log("SPP Connection OK");
+		COMPort.write("Hello Bluetooth module :-)");//for test only
 	}
 	else{
 		switch(SPBTState){
