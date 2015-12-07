@@ -5,9 +5,10 @@
 
 
 //generic vars
-var COMPort='COM15';
+var COMPort='COM55';
 var PORT=80;
 var MAINFILE='index.html';
+var BTLoggerName='LaVue Logger';
 
 //os
 var os=require('os');
@@ -26,7 +27,7 @@ var wsConnected=false;
 var http = require('http');
 var io=require('socket.io');
 io=io.listen(app.listen(PORT,function(){
-	console.log("listening on "+PORT)
+	console.log("WebServer: ON ("+PORT+")")
 }));
 
 app.get('/',function(req,res){
@@ -44,7 +45,7 @@ function CS_AckHandler(data){
 }
 
 io.on('connection',function(socket){
-	console.log("new WebSocket created");
+	console.log("WebSocket: ON");
 	wsConnected=true;
 	socket.on('Ack', CS_AckHandler);
 	socket.on('disconnect', function() {
@@ -70,3 +71,4 @@ function BTCOMcb(d){
 }
 
 SPBT(COMPort,115200,function(x){console.log("User callback , data received :"+x);});
+console.log("Bluetooth: ON");
