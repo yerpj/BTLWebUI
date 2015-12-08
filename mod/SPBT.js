@@ -7,9 +7,10 @@ var Baudrate=115200;
 var BTLoggerName='LaVue Logger';
 var BTLoggerAddr='';
 var COMList=[];
-var COMPort;
+var COMPort=false;
 var COMPortValid=false;
 var UserCallback=false;
+var ConnectCallback=false;
 var IsPaired=false;
 var SPBTBusy=false;
 const SPBTState_STANDBY=0;
@@ -20,7 +21,7 @@ var SPBTEscapeSequence='^#^$^%';
 var BTDeviceList=[];
 
 function SPBTDispatch(input){
-	console.log("----["+input+"]----")
+	//console.log("----["+input+"]----")
 	if(input.indexOf('AT-AB BDAddress')>-1){
 		setTimeout(function(){Discovery();},1000);
 	}
@@ -29,7 +30,8 @@ function SPBTDispatch(input){
 	}
 	else if(input=='AT-AB -BypassMode-'){
 		SPBTState=SPBTState_ACTIVE_BYPASS;
-		COMPort.write("t");//for test only
+		console.log("Bypass mode NOW");
+		ConnectCallback("OK");
 	}
 	else if(input=='AT-AB ConnectionDown'){
 		SPBTState=SPBTState_ACTIVE_COMMAND;
@@ -91,10 +93,11 @@ function SPBTcb(d){
 	}
 }
 
-function SPBT(COM, Baud,cb) {
+function SPBT(COM, Baud,user_cb,Connect_cb) {
 	COMName = COM;
 	Baudrate=Baud;
-	UserCallback=cb;
+	UserCallback=user_cb;
+	ConnectCallback=Connect_cb;
 	
 	function connect(){
 		COMPort = new SerialPort(COMName, {
@@ -189,16 +192,42 @@ function SoftReset(){
 	}
 }
 
-/*
-var PortList=
-Serial.list(function (err, ports) {
-  ports.forEach(function(port) {
-    console.log(port.comName);
-  });
-});
-*/
-
+function Terminate(cb){
+	if(SPBTState==SPBTState_ACTIVE_BYPASS){
+		console.log("Forcing Command mode...");
+		ForceCMDMode();
+		setTimeout(function(){
+			console.log("SPP Disconnecting...");
+			COMPort.write("AT+AB SPPDisconnect\r\n");
+			setTimeout(function(){
+				console.log("Closing Bluetooth link...");
+				COMPort.write("AT+AB LinkDisconnect\r\n");
+				
+				setTimeout(function(){
+					if(COMPort){
+						console.log("Closing COM port...");
+						COMPort.close(function(){console.log("COM Port closed");});
+						cb();
+					}
+				},500);
+				
+			},500);
+		},2500);
+		
+		
+	}
+	else{
+		setTimeout(function(){
+			if(COMPort){
+				console.log("Closing COM port...");
+				COMPort.close(function(){console.log("COM Port closed");});
+				cb();
+			}
+		},500);
+	}
+}
 
 exports.SPBT=SPBT;
 exports.Bond=Bond;
 exports.SoftReset=SoftReset;
+exports.Terminate=Terminate;

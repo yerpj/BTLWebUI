@@ -5,7 +5,7 @@
 
 
 //generic vars
-var COMPort='COM55';
+var COMPort='COM14';
 var PORT=80;
 var MAINFILE='index.html';
 var BTLoggerName='LaVue Logger';
@@ -58,7 +58,7 @@ io.set('transports',  ['websocket', 'polling']);
 
 
 //Serial port
-var SPBT=require('./mod/SPBT').SPBT;
+var SPBT=require('./mod/SPBT');
 
 function BTCOMcb(d){
 	var data="";
@@ -70,5 +70,20 @@ function BTCOMcb(d){
 		console.log('no websocket to send to');
 }
 
-SPBT(COMPort,115200,function(x){console.log("User callback , data received :"+x);});
+function Start(x){
+	if(x==='OK')
+	{
+		
+	}
+	else{
+		console.log("Error : "+x);
+	}
+}
+
+SPBT.SPBT(COMPort,115200,function(x){console.log("User callback , data received :"+x);},Start);
 console.log("Bluetooth: ON");
+
+process.on('SIGINT', function () {
+  console.log('CTRL-C: exiting...');
+  SPBT.Terminate(function(){console.log("OK. bye bye");process.exit(0);});
+});
