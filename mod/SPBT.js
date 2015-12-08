@@ -29,6 +29,7 @@ function SPBTDispatch(input){
 	}
 	else if(input=='AT-AB -BypassMode-'){
 		SPBTState=SPBTState_ACTIVE_BYPASS;
+		COMPort.write("t");//for test only
 	}
 	else if(input=='AT-AB ConnectionDown'){
 		SPBTState=SPBTState_ACTIVE_COMMAND;
@@ -36,21 +37,24 @@ function SPBTDispatch(input){
 	else if(input.indexOf('AT-AB Device')>-1){
 		//console.log("Discovery: "+input);
 		var BDAddr=input.slice(13,25);
-		BTLoggerAddr=BDAddr;
 		var BDName=input.slice(27,input.length-1);
 		BTDeviceList.push({BDAddr,BDName});
 		if(BDName==BTLoggerName){
+			BTLoggerAddr=BDAddr;
 			setTimeout(function(){Bond(BDName);},5000);
 		}
 		//console.log(BTDeviceList);
 	}
 	else if(input.indexOf('AT-AB BondOk')>-1){
 		console.log("Bonding OK");
-		COMPort.write("AT+AB SPPConnect "+BTLoggerAddr+"\r\n");
+		setTimeout(function(){
+			console.log("SPP connection request on "+BTLoggerAddr);
+			COMPort.write("AT+AB SPPConnect "+BTLoggerAddr+"\r\n");
+		},2000);
 	}
 	else if(input.indexOf('AT-AB ConnectionUp')>-1){
 		console.log("SPP Connection OK");
-		COMPort.write("Hello Bluetooth module :-)");//for test only
+		//COMPort.write("Hello Bluetooth module :-)");//for test only
 	}
 	else{
 		switch(SPBTState){
@@ -175,9 +179,10 @@ function SoftReset(){
 	if(COMPortValid)
 	{
 		if(!SPBTBusy){
-			COMPort.write("AT+AB Reset\r\n");
-			//setTimeout(function(){SPBTBusy=false;},5000);
-			//SPBTBusy=true;
+			ForceCMDMode();
+			setTimeout(function(){
+				COMPort.write("AT+AB Reset\r\n");
+			},2500);
 		}
 		else
 			console.log("SPBT Busy");
