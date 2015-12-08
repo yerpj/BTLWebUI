@@ -73,14 +73,17 @@ function BTCOMcb(d){
 function Start(x){
 	if(x==='OK')
 	{
-		
+		if(wsConnected)
+			io.emit('FakeData',"Bluetooth SPP Connection UP and running !! :-)");
+		else
+			console.log('no websocket to send to');
 	}
 	else{
 		console.log("Error : "+x);
 	}
 }
 
-SPBT.SPBT(COMPort,115200,function(x){console.log("User callback , data received :"+x);},Start);
+SPBT.SPBT(COMPort,115200,BTCOMcb,Start);
 console.log("Bluetooth: ON");
 
 process.on('SIGINT', function () {
