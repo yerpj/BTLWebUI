@@ -5,7 +5,7 @@
 
 
 //generic vars
-var COMPort='COM14';
+var COMPort='COM55';
 var PORT=80;
 var MAINFILE='index.html';
 var BTLoggerName='LaVue Logger';
@@ -60,9 +60,7 @@ io.set('transports',  ['websocket', 'polling']);
 //Serial port
 var SPBT=require('./mod/SPBT');
 
-function BTCOMcb(d){
-	var data="";
-	d.forEach(function(elem){data+=String.fromCharCode(elem)});
+function BTCOMcb(data){
 	console.log("data from COM :"+data);
 	if(wsConnected)
 		io.emit('FakeData',data);
