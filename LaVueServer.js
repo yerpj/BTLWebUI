@@ -68,6 +68,10 @@ function BTCOMcb(data){
 		console.log('no websocket to send data to, skipping');
 }
 
+/*
+{device:"RudiPCB",temp:32,id:"capteur de temperature"}
+*/
+
 function Start(x){
 	if(x==='OK')
 	{

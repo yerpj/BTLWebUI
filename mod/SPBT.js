@@ -74,19 +74,15 @@ function SPBTDispatch(input){
 }
 
 function SPBTcb(d){
-	SPBTcb.data=SPBTcb.data||"";//create an empty string if not yet existing
+	SPBTcb.data=SPBTcb.data||"";
 	if(d){ 
 		d.forEach(function(elem){SPBTcb.data+=String.fromCharCode(elem)});
 	}
 	var CMDEndOffset=SPBTcb.data.indexOf('\r\n');
 	if(CMDEndOffset>-1){
-		//console.log("send to dispatch :"+SPBTcb.data.substr(0,CMDEndOffset));
 		SPBTDispatch(SPBTcb.data.slice(0,CMDEndOffset));
 		SPBTcb.data=SPBTcb.data.slice(CMDEndOffset+2,SPBTcb.data.length);
-		//console.log("Remaining string :"+SPBTcb.data);
 	}
-	
-	//check if there is another cmd pending
 	CMDEndOffset=SPBTcb.data.indexOf('\r\n');
 	if(CMDEndOffset>-1){
 		SPBTcb();
@@ -111,7 +107,6 @@ function SPBT(COM, Baud,user_cb,Connect_cb) {
 				COMPortValid=true;
 				COMPort.on('data',SPBTcb);
 				SoftReset();
-				//Discovery();
 			}
 		});
 	}
@@ -139,15 +134,6 @@ function Discovery(){
 		else
 			console.log("SPBT Busy");
 	}
-	/* Answer from a discovery: 
-	
-	AT-AB InqPending
-
-	AT-AB DiscoveryPending 1
-
-	AT-AB Device 44746c2ced48 "JPPhone"
-	
-	*/
 }
 
 function Bond(name){
@@ -213,8 +199,6 @@ function Terminate(cb){
 				
 			},500);
 		},2500);
-		
-		
 	}
 	else{
 		setTimeout(function(){
