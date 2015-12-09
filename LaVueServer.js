@@ -61,11 +61,11 @@ io.set('transports',  ['websocket', 'polling']);
 var SPBT=require('./mod/SPBT');
 
 function BTCOMcb(data){
-	console.log("data from COM :"+data);
+	//console.log("data from COM :"+data);
 	if(wsConnected)
 		io.emit('FakeData',data);
 	else
-		console.log('no websocket to send to');
+		console.log('no websocket to send data to, skipping');
 }
 
 function Start(x){

@@ -37,7 +37,7 @@ function SPBTDispatch(input){
 		SPBTState=SPBTState_ACTIVE_COMMAND;
 	}
 	else if(input.indexOf('AT-AB Device')>-1){
-		//console.log("Discovery: "+input);
+		console.log("Discovery: "+input);
 		var BDAddr=input.slice(13,25);
 		var BDName=input.slice(27,input.length-1);
 		BTDeviceList.push({BDAddr,BDName});
