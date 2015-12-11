@@ -1,25 +1,65 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset="utf-8"/>
+		<meta charset="utf-8"/></meta>
 		<h1>HELLO WORLD!</h1><br>
 		<textarea id="FakeData">Fake Data</textarea>
+		<div id="LiveGraphElem" style="width:600px;height:300px"></div>
 		
+		
+		<!--[if lte IE 8]><script type="text/javascript" language="javascript" src="excanvas.min.js"></script><![endif]-->
+		<!--<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>-->
+		<script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+		<script src="http://cdn.jsdelivr.net/jquery.flot/0.8.3/jquery.flot.min.js"></script><!--http://code.jquery.com/jquery-1.10.1.min.js-->
+		
+		<script src="/socket.io/socket.io.js"></script>
+		<script type="text/javascript">
+		    var Xaxis=[[0,0]];
+		    var Yaxis=[[0,0]];
+		    var Zaxis=[[0,0]];
+			var dataset = [{ label: "X axis", data: Xaxis, color: "#3d7504"},{ label: "Y axis", data: Yaxis, color: "#2e47af"},{ label: "Z axis", data: Zaxis, color: "#c21616"}];
+			var LiveGraph=$("#LiveGraphElem").plot(dataset,{yaxis:{min:-100,max:100}});
+		</script>
 	</head>
 
 	<body>
-		<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-		<script src="/socket.io/socket.io.js"></script>
 		<script>
-			var abc;
+			const LiveGraphMaxMemoryTime=20;//seconds
 			var socket = io.connect();
 			socket.on('connect',function(){
+				document.getElementById("FakeData").value="Server connected";
 			});
-			socket.on('FakeData', function (data) {
-				document.getElementById("FakeData").value=data;
-				abc=data;
-				socket.emit('Ack', "FakeData OK");
+			socket.on('LoggerData', function (data) {
+				LiveGraphUpdate(data);
+				//socket.emit('Ack', "LoggerData OK");
 			});
+			socket.on('disconnect',function(){
+				document.getElementById("FakeData").value="Server disconnected";
+			});
+			
+			function LiveGraphUpdate(x)
+			{
+				var data=JSON.parse(x);
+				var now=new Date().getTime();
+				//console.log(data);
+				while( ((now-Xaxis[0][0])>(LiveGraphMaxMemoryTime*1000)) && (Xaxis.length>1) )
+				{
+					Xaxis.shift();
+					Yaxis.shift();
+					Zaxis.shift();
+				}
+				Xaxis.push([now,data.x]);
+				Yaxis.push([now,data.y]);
+				Zaxis.push([now,data.z]);
+				$("#LiveGraphElem").plot(
+					dataset,{
+						yaxis:{min:-100,max:100},
+						grid: {aboveData: true,backgroundColor: "#575757",}
+					}
+				);
+				//console.log("refreshed");
+				//document.getElementById("FakeData").value=data.temp;
+			}
 		</script>
    
 	</body>

@@ -61,9 +61,9 @@ io.set('transports',  ['websocket', 'polling']);
 var SPBT=require('./mod/SPBT');
 
 function BTCOMcb(data){
-	//console.log("data from COM :"+data);
+	//console.log(data);
 	if(wsConnected)
-		io.emit('FakeData',data);
+		io.emit('LoggerData',data);
 	else
 		console.log('no websocket to send data to, skipping');
 }
@@ -76,7 +76,7 @@ function Start(x){
 	if(x==='OK')
 	{
 		if(wsConnected)
-			io.emit('FakeData',"Bluetooth SPP Connection UP and running !! :-)");
+			;//io.emit('AccelDatas',"Bluetooth SPP Connection UP and running !! :-)");
 		else
 			console.log('no websocket to send to');
 	}
