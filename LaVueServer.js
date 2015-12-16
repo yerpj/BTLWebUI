@@ -8,6 +8,7 @@
 var COMPort='COM55';
 var PORT=80;
 var MAINFILE='index.html';
+var CSSFILE='styles.css';
 var BTLoggerName='LaVue Logger';
 
 //os
@@ -40,6 +41,16 @@ app.get('/',function(req,res){
     });
 });
 
+app.get('/styles.css',function(req,res){
+	console.log(' Received request for '+req.url );
+    fs.readFile(CSSFILE,function (err, data){
+		if(err)throw err;
+        res.writeHead(200, {'Content-Type': 'text/css'});
+        res.write(data);
+        res.end();
+    });
+});
+
 function CS_AckHandler(data){
 	//console.log('client WS message: '+data);	
 }
@@ -61,7 +72,7 @@ io.set('transports',  ['websocket', 'polling']);
 var SPBT=require('./mod/SPBT');
 
 function BTCOMcb(data){
-	//console.log(data);
+	console.log(data);
 	if(wsConnected)
 		io.emit('LoggerData',data);
 	else
@@ -76,7 +87,7 @@ function Start(x){
 	if(x==='OK')
 	{
 		if(wsConnected)
-			;//io.emit('AccelDatas',"Bluetooth SPP Connection UP and running !! :-)");
+			io.emit('DebugMessage','BTCOM established');
 		else
 			console.log('no websocket to send to');
 	}
@@ -90,5 +101,6 @@ console.log("Bluetooth: ON");
 
 process.on('SIGINT', function () {
   console.log('CTRL-C: exiting...');
+  io.emit('DebugMessage','closing BTCOM...');
   SPBT.Terminate(function(){console.log("OK. bye bye");process.exit(0);});
 });

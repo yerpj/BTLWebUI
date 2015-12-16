@@ -2,10 +2,16 @@
 <html>
 	<head>
 		<meta charset="utf-8"/></meta>
-		<h1>HELLO WORLD!</h1><br>
-		<textarea id="FakeData">Fake Data</textarea>
-		<div id="LiveGraphElem" style="width:600px;height:300px"></div>
+		<link rel="stylesheet" type="text/css" href="styles.css">
 		
+
+		<DP>debug version: 0.1.6</DP>
+		<div align= "center">
+			<HP>LaVue live</HP>
+			<div id="LiveGraphElem" style="width:800px;height:300px" ></div><br>
+			<DP>debug box:</DP><br>
+			<textarea id="StatusBox" rows="10" cols="50">StatusBox</textarea>
+		</div>
 		
 		<!--[if lte IE 8]><script type="text/javascript" language="javascript" src="excanvas.min.js"></script><![endif]-->
 		<!--<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>-->
@@ -17,25 +23,35 @@
 		    var Xaxis=[[0,0]];
 		    var Yaxis=[[0,0]];
 		    var Zaxis=[[0,0]];
-			var dataset = [{ label: "X axis", data: Xaxis, color: "#3d7504"},{ label: "Y axis", data: Yaxis, color: "#2e47af"},{ label: "Z axis", data: Zaxis, color: "#c21616"}];
+			var dataset = [{ label: "X axis", data: Xaxis, color: "#3d7504"},{ label: "Y axis", data: Yaxis, color: "#2e47af"},{ label: "Z axis", data: Zaxis, color: "#d16605"}];
 			var LiveGraph=$("#LiveGraphElem").plot(dataset,{yaxis:{min:-100,max:100}});
 		</script>
 	</head>
 
-	<body>
+	<body bgcolor="#c3c3c3">
 		<script>
+			var DebugBox=document.getElementById("StatusBox");
 			const LiveGraphMaxMemoryTime=20;//seconds
 			var socket = io.connect();
 			socket.on('connect',function(){
-				document.getElementById("FakeData").value="Server connected";
+				PrintDebugConsole('Server connected');
 			});
 			socket.on('LoggerData', function (data) {
 				LiveGraphUpdate(data);
 				//socket.emit('Ack', "LoggerData OK");
 			});
-			socket.on('disconnect',function(){
-				document.getElementById("FakeData").value="Server disconnected";
+			socket.on('DebugMessage', function (data) {
+				PrintDebugConsole(data);
 			});
+			socket.on('disconnect',function(){
+				PrintDebugConsole('Server disconnected');
+			});
+			
+			function PrintDebugConsole(data){
+				while( (DebugBox.value.length>500) && (DebugBox.value.indexOf('\n')!=-1) )
+					DebugBox.value=DebugBox.value.substring(DebugBox.value.indexOf('\n')+1);
+				DebugBox.value+="\n> "+data;
+			}
 			
 			function LiveGraphUpdate(x)
 			{
@@ -53,12 +69,14 @@
 				Zaxis.push([now,data.z]);
 				$("#LiveGraphElem").plot(
 					dataset,{
-						yaxis:{min:-100,max:100},
-						grid: {aboveData: true,backgroundColor: "#575757",}
+						yaxis:{min:-40,max:40},
+						xaxis: {show:false},
+						grid: {aboveData: false,backgroundColor: "#575757",color: "black"},
+						legend:{position:"sw",backgroundColor: "#202020"}
 					}
 				);
 				//console.log("refreshed");
-				//document.getElementById("FakeData").value=data.temp;
+				//document.getElementById("StatusBox").value=data.temp;
 			}
 		</script>
    
