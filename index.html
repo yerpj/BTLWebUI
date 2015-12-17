@@ -8,7 +8,13 @@
 		<DP>debug version: 0.1.6</DP>
 		<div align= "center">
 			<HP>LaVue live</HP>
-			<div id="LiveGraphElem" style="width:800px;height:300px" ></div><br>
+			<div id="AccelGraphElem" style="width:800px;height:300px" ></div><br>
+			
+		</div>
+		<br><div align= "left">
+			<DP>Humidité   :</DP><br><meter id="HumiProgressBar" color: "#d16605" value="23" min="0" max="100"></meter><DP id="HumiTextValue"></DP><br>
+			<DP>Temperature:</DP><br><meter id="TempProgressBar" color: "#d16605" value="23" min="0" max="50"></meter><DP id="TempTextValue"></DP><br>
+			<br><br><br><br><br><br><br><br><br><br>
 			<DP>debug box:</DP><br>
 			<textarea id="StatusBox" rows="10" cols="50">StatusBox</textarea>
 		</div>
@@ -23,15 +29,29 @@
 		    var Xaxis=[[0,0]];
 		    var Yaxis=[[0,0]];
 		    var Zaxis=[[0,0]];
-			var dataset = [{ label: "X axis", data: Xaxis, color: "#3d7504"},{ label: "Y axis", data: Yaxis, color: "#2e47af"},{ label: "Z axis", data: Zaxis, color: "#d16605"}];
-			var LiveGraph=$("#LiveGraphElem").plot(dataset,{yaxis:{min:-100,max:100}});
+		    var TempData=0;
+			var HumiData=0;
+			
+			var Acceldataset = [{ label: "X axis", data: Xaxis, color: "#009933"},{ label: "Y axis", data: Yaxis, color: "#3344d9"},{ label: "Z axis", data: Zaxis, color: "#fd7e00"}];
+			$("#AccelGraphElem").plot(
+					Acceldataset,{
+						yaxis:{min:-40,max:40},
+						xaxis: {show:false},
+						grid: {aboveData: false,backgroundColor: "#9b9b9b",color: "black"},
+						legend:{position:"sw",backgroundColor: "#B7B7B7"}
+					}
+				);
 		</script>
 	</head>
 
 	<body bgcolor="#c3c3c3">
 		<script>
 			var DebugBox=document.getElementById("StatusBox");
-			const LiveGraphMaxMemoryTime=20;//seconds
+			var TempProgressBar=document.getElementById("TempProgressBar");
+			var HumiProgressBar=document.getElementById("HumiProgressBar");
+			var HumiTextValue=document.getElementById("HumiTextValue");
+			var TempTextValue=document.getElementById("TempTextValue");
+			const LiveGraphMaxMemoryTime=10;//seconds
 			var socket = io.connect();
 			socket.on('connect',function(){
 				PrintDebugConsole('Server connected');
@@ -48,7 +68,7 @@
 			});
 			
 			function PrintDebugConsole(data){
-				while( (DebugBox.value.length>500) && (DebugBox.value.indexOf('\n')!=-1) )
+				while( (DebugBox.value.length>300) && (DebugBox.value.indexOf('\n')!=-1) )
 					DebugBox.value=DebugBox.value.substring(DebugBox.value.indexOf('\n')+1);
 				DebugBox.value+="\n> "+data;
 			}
@@ -63,20 +83,25 @@
 					Xaxis.shift();
 					Yaxis.shift();
 					Zaxis.shift();
+
 				}
 				Xaxis.push([now,data.x]);
 				Yaxis.push([now,data.y]);
 				Zaxis.push([now,data.z]);
-				$("#LiveGraphElem").plot(
-					dataset,{
+				TempData=data.T;
+				HumiData=data.H;
+				$("#AccelGraphElem").plot(
+					Acceldataset,{
 						yaxis:{min:-40,max:40},
 						xaxis: {show:false},
-						grid: {aboveData: false,backgroundColor: "#575757",color: "black"},
-						legend:{position:"sw",backgroundColor: "#202020"}
+						grid: {aboveData: false,backgroundColor: "#9b9b9b",color: "black"},
+						legend:{position:"sw",backgroundColor: "#B7B7B7"}
 					}
 				);
-				//console.log("refreshed");
-				//document.getElementById("StatusBox").value=data.temp;
+				TempProgressBar.value=TempData;
+				HumiProgressBar.value=HumiData;
+				HumiTextValue.innerHTML=HumiData;
+				TempTextValue.innerHTML=TempData;
 			}
 		</script>
    
