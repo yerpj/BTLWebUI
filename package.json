@@ -3,7 +3,18 @@
   "version": "0.1.0",
   "dependencies": {
     "express": "^4.13.3",
-    "serialport": "^2.0.5",
-    "socket.io": "1.0.x"
+    "serialport": "^2.0.6",
+    "socket.io": "^1.4.4"
+  },
+  "devDependencies": {},
+  "optionalDependencies": {},
+  "engines": {
+    "node": "*"
+  },
+  "author": "JRY <jean-philippe.rey@heig-vd.ch> (www.iict.ch)",
+  "description": "LaVue Server, meant to run on Raspberry Pi",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/yerpj/BTLWebUI.git"
   }
 }

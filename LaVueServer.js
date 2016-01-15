@@ -7,6 +7,7 @@
 //generic vars
 var COMPort='COM55';
 var PORT=80;
+var MAINFILEPATH='/home/jp/nodejs/projects/BTLWebUI/';
 var MAINFILE='index.html';
 var CSSFILE='styles.css';
 var BTLoggerName='LaVue Logger';
@@ -35,7 +36,7 @@ io=io.listen(app.listen(PORT,function(){
 
 app.get('/',function(req,res){
 	console.log(' Received request for '+req.url );
-    fs.readFile(MAINFILE,function (err, data){
+    fs.readFile(MAINFILEPATH+MAINFILE,function (err, data){
 		if(err)throw err;
         res.writeHead(200, {'Content-Type': 'text/html','Content-Length':data.length});
         res.write(data);
@@ -45,7 +46,7 @@ app.get('/',function(req,res){
 
 app.get('/styles.css',function(req,res){
 	console.log(' Received request for '+req.url );
-    fs.readFile(CSSFILE,function (err, data){
+    fs.readFile(MAINFILEPATH+CSSFILE,function (err, data){
 		if(err)throw err;
         res.writeHead(200, {'Content-Type': 'text/css'});
         res.write(data);
@@ -57,9 +58,11 @@ function CS_AckHandler(data){
 	//console.log('client WS message: '+data);	
 }
 
+
 io.on('connection',function(socket){
 	console.log("WebSocket: ON");
 	wsConnected=true;
+	socket.on('error',function(){console.log('Socket error')});
 	socket.on('Ack', CS_AckHandler);
 	socket.on('disconnect', function() {
 		console.log("Websocket disconnected");

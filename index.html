@@ -33,8 +33,7 @@
 			var HumiData=0;
 			
 			var Acceldataset = [{ label: "X axis", data: Xaxis, color: "#009933"},{ label: "Y axis", data: Yaxis, color: "#3344d9"},{ label: "Z axis", data: Zaxis, color: "#fd7e00"}];
-			$("#AccelGraphElem").plot(
-					Acceldataset,{
+			$("#AccelGraphElem").plot({
 						yaxis:{min:-40,max:40},
 						xaxis: {show:false},
 						grid: {aboveData: false,backgroundColor: "#9b9b9b",color: "black"},

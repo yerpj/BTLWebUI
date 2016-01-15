@@ -20,6 +20,9 @@ var SPBTState=SPBTState_ACTIVE_COMMAND;
 var SPBTEscapeSequence='^#^$^%';
 var BTDeviceList=[];
 
+var LinuxOS=true;
+LinuxOS=(os.platform()==='win32')?false:true;
+
 function SPBTDispatch(input){
 	//console.log("----["+input+"]----")
 	if(input.indexOf('AT-AB BDAddress')>-1){
@@ -37,15 +40,15 @@ function SPBTDispatch(input){
 		SPBTState=SPBTState_ACTIVE_COMMAND;
 	}
 	else if(input.indexOf('AT-AB Device')>-1){
-		console.log("Discovery: "+input);
+		//console.log("Discovery: "+input);
 		var BDAddr=input.slice(13,25);
 		var BDName=input.slice(27,input.length-1);
-		BTDeviceList.push({BDAddr,BDName});
+		BTDeviceList.push({'BDAddr':BDAddr,'BDName':BDName});
 		if(BDName==BTLoggerName){
 			BTLoggerAddr=BDAddr;
 			setTimeout(function(){Bond(BDName);},5000);
 		}
-		//console.log(BTDeviceList);
+		console.log(BTDeviceList);
 	}
 	else if(input.indexOf('AT-AB BondOk')>-1){
 		console.log("Bonding OK");
@@ -75,8 +78,14 @@ function SPBTDispatch(input){
 
 function SPBTcb(d){
 	SPBTcb.data=SPBTcb.data||"";
-	if(d){ 
-		d.forEach(function(elem){SPBTcb.data+=String.fromCharCode(elem)});
+	//console.log("d: "+d+"\n type: "+typeof d);
+
+	if(LinuxOS)
+		SPBTcb.data+=d;
+	else{
+		if(d){ 
+			d.forEach(function(elem){SPBTcb.data+=String.fromCharCode(elem)});
+		}
 	}
 	var CMDEndOffset=SPBTcb.data.indexOf('\r\n');
 	if(CMDEndOffset>-1){
