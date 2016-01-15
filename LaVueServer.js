@@ -54,6 +54,28 @@ app.get('/styles.css',function(req,res){
     });
 });
 
+
+app.get('/localflot.js',function(req,res){
+        console.log(' Received request for '+req.url );
+    fs.readFile(MAINFILEPATH+'localflot.js',function (err, data){
+                if(err)throw err;
+        res.writeHead(200, {'Content-Type': 'text/css'});
+        res.write(data);
+        res.end();
+    });
+});
+
+app.get('/localjquery.js',function(req,res){
+        console.log(' Received request for '+req.url );
+    fs.readFile(MAINFILEPATH+'localjquery.js',function (err, data){
+                if(err)throw err;
+        res.writeHead(200, {'Content-Type': 'text/css'});
+        res.write(data);
+        res.end();
+    });
+});
+
+
 function CS_AckHandler(data){
 	//console.log('client WS message: '+data);	
 }
