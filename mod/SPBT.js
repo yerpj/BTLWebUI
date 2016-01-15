@@ -2,7 +2,7 @@ var os=require('os');
 var Serial=require('serialport');
 var SerialPort = Serial.SerialPort;
 
-var COMName=(os.platform==='win32')?'COM0':'/dev/ttyUSB0';
+var COMName=(os.platform==='win32')?'COM0':'ttyAMA0';
 var Baudrate=115200;
 var BTLoggerName='LaVue Logger';
 var BTLoggerAddr='';
@@ -124,10 +124,17 @@ function SPBT(COM, Baud,user_cb,Connect_cb) {
 			COMList.push(port.comName);
 		});
 		if(COMList.indexOf(COMName)>-1){
+			if(COMName.indexOf('/dev/')==-1){
+				COMName='/dev/'+COMName;
+				console.log("automatically added \"/dev/\" on COM name");
+			}
 			connect();
 		}
 		else{
-			console.log("Serial port does not exist");
+			
+			console.log("Serial port named \""+COMName+"\" does not exist");
+			console.log("exiting program");
+			process.exit(0);
 		}
 	});	
 }
