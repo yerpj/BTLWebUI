@@ -15,6 +15,8 @@ var BTLoggerName='LaVue Logger';
 var os=require('os');
 var LinuxOS=true;
 LinuxOS=(os.platform()==='win32')?false:true;
+if(LinuxOS)
+  COMPort='/dev/ttyUSB0';
 
 //file system
 var fs=require('fs');
