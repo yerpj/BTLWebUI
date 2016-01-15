@@ -12,5 +12,7 @@ More infos about the specific Bluetooth module can be found here:
 - [Datasheet]( http://www.st.com/st-web-ui/static/active/en/resource/technical/document/datasheet/DM00048919.pdf )
 - [User manual] ( http://www.st.com/st-web-ui/static/active/en/resource/technical/document/user_manual/DM00055990.pdf )
 
-
+TESTS
+=====
 This project was tested on Windows, and Linux Debian (Cubian & Raspbian)
+
