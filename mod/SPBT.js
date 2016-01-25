@@ -11,6 +11,7 @@ var COMPort=false;
 var COMPortValid=false;
 var UserCallback=false;
 var ConnectCallback=false;
+var DiscoveryCallback=false;
 var IsPaired=false;
 var SPBTBusy=false;
 const SPBTState_STANDBY=0;
@@ -45,6 +46,9 @@ function SPBTDispatch(input){
 		var BDName=input.slice(27,input.length-1);
 		BTDeviceList.push({'BDAddr':BDAddr,'BDName':BDName});
 		if(BDName==BTLoggerName){
+			clearTimeout(DiscoveryCallback);
+			DiscoveryCallback=false;
+			console.log("Periodic discovery disabled");
 			BTLoggerAddr=BDAddr;
 			setTimeout(function(){Bond(BDName);},5000);
 		}
@@ -143,9 +147,11 @@ function Discovery(){
 	if(COMPortValid)
 	{
 		if(!SPBTBusy){
+			console.log("Periodic discovery ...");
 			COMPort.write("AT+AB Discovery\r\n");
 			setTimeout(function(){SPBTBusy=false;},15000);//stated in User manual page 17
 			SPBTBusy=true;
+			DiscoveryCallback=setTimeout(Discovery,16000);//timeout greater than the one above
 		}
 		else
 			console.log("SPBT Busy");
