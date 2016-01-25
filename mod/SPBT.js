@@ -144,6 +144,7 @@ function SPBT(COM, Baud,user_cb,Connect_cb) {
 }
 
 function Discovery(){
+	BTDeviceList='';
 	if(COMPortValid)
 	{
 		if(!SPBTBusy){
